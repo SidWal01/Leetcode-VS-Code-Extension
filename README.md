@@ -79,7 +79,6 @@ The `cp-leetcode` extension for Visual Studio Code simplifies competitive progra
    - Select a programming language.
    - Provide the LeetCode problem URL.
 4. Check the `inputs/` and `outputs/` directories for the extracted test cases.
-5. Write by yourself the size of input array in each test cases because in leetcode problems there is not input array size given that's the reason why leetcode checks each input in different testcases.
 
 ### Running and Comparing
 
