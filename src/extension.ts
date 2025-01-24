@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import puppeteer from 'puppeteer';
 import { cleanInput } from './normalizeOutput';
+import { cleanInput1 } from './cleanoutput';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { getLanguageFromExtension } from './getLanguageFromExtension';
@@ -47,7 +48,7 @@ export function activate(context: vscode.ExtensionContext) {
             const url = await vscode.window.showInputBox({
                 placeHolder: 'Enter the URL of the Leetcode problem',
                 validateInput: (input: string) => {
-                    const regex = /^(https?:\/\/)(www\.)?leetcode\.com\/problems\/[a-zA-Z0-9-]+(\/description\/?)?$/;
+                    const regex = /^(https?:\/\/)(www\.)?leetcode\.com\/problems\/[a-zA-Z0-9-]+(\/description\/?.*)?$/;
                     return regex.test(input) ? null : 'Please enter a valid LeetCode problem URL';
                 },
             });
@@ -56,13 +57,14 @@ export function activate(context: vscode.ExtensionContext) {
                 vscode.window.showErrorMessage('URL is required');
                 return;
             }
+            const cleanedUrl = url.split('/description')[0] + '/description';
 
             const browser = await puppeteer.launch({ headless: false, defaultViewport: null });
             const page = await browser.newPage();
 
             try {
                 console.log('Navigating to URL...');
-                await page.goto(url, { waitUntil: 'domcontentloaded' });
+                await page.goto(cleanedUrl, { waitUntil: 'domcontentloaded' });
                 console.log('Page loaded successfully.');
                 await page.waitForSelector(".elfjS", { timeout: 7000 });
 
@@ -87,7 +89,7 @@ export function activate(context: vscode.ExtensionContext) {
 
                 let outputMatch: RegExpExecArray | null;
                 while ((outputMatch = outputRegex.exec(content)) !== null) {
-                    outputs.push(cleanInput(outputMatch[1].trim()));
+                    outputs.push(cleanInput1(outputMatch[1].trim()));
                 }
 
                 console.log('Inputs:', inputs);
